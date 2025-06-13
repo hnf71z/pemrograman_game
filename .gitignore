@@ -9,8 +9,7 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 /[Rr]ecordings/
-/[Uu]serSettings/
-/[Pp]rojectSettings/ # Mengabaikan seluruh folder ProjectSettings
+# Mengabaikan seluruh folder ProjectSettings
 
 # Files
 !/[Aa]ssets/*/.meta # Keep .meta files for assets
@@ -53,7 +52,3 @@ Hub/
 
 # Rider specific files
 .idea*/
-
-# Package manager files (sesuai permintaan)
-/[Pp]ackages/manifest.json
-/[Pp]ackages/packages-lock.json
