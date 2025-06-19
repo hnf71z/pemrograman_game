@@ -8,24 +8,59 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb;
     public Animator anim;
     public int facingDirection = 1;
+    public PlayerAttack playerAttack;
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.1f;
+    public LayerMask groundLayer;
+    public int maxJumps = 2;
 
+    private int jumpCount = 0;
+    private bool isGrounded;
+    private bool jumpPressed = false;
+
+
+    private void Update()   
+    {
+            // Deteksi apakah menyentuh tanah
+            isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+            anim.SetBool("Grounded", !isGrounded);
+            // Reset jumlah lompatan saat menyentuh tanah
+            if (isGrounded)
+        {
+            jumpCount = 0;
+        }
+
+            // Input serangan
+            if (Input.GetButtonDown("Attack"))
+            {
+                playerAttack.Attack();
+            }
+
+            // Input loncat (double jump)
+            if (Input.GetKeyDown(KeyCode.Space) && jumpCount < maxJumps)
+            {
+                jumpPressed = true;
+                jumpCount++;
+            }
+    }
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         float horizontal = Input.GetAxis("Horizontal");
 
-        if(horizontal > 0 && transform.localScale.x < 0 ||
+        if (horizontal > 0 && transform.localScale.x < 0 ||
             horizontal < 0 && transform.localScale.x > 0)
-            {
-                Flip();
-            }
-
+        {
+            Flip();
+        }
         anim.SetFloat("Horizontal", Mathf.Abs(horizontal));
-
-        rb.velocity = new Vector2(Input.GetAxis("Horizontal") * speed, rb.velocity.y);
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        // Jalankan loncat jika tombol ditekan
+        if (jumpPressed)
+        {
             rb.velocity = new Vector2(rb.velocity.x, speed);
+            jumpPressed = false;
+        }
 
     }
 
@@ -33,5 +68,14 @@ public class PlayerMovement : MonoBehaviour
     {
         facingDirection *= -1;
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
     }
 }
